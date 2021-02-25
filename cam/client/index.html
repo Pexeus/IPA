@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Kamera Konfiguration</title>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="config">
+            <h1>Konfiguration</h1>
+            <label for="server">
+                AI Server
+            </label>
+            <input type="text" id="server" placeholder="lade konfiguration...">
+            <button onclick="updateConfig()">Speichern</button>
+        </div>
+        <div id="logs">
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js" integrity="sha512-oFOCo2/3DtjrJG4N27BjSLQWoiBv171sK6a+JiWjp/7agxC2nCUP358AqzxkBUb5jX8g6CYLPdSKQTbC0weCwA==" crossorigin="anonymous"></script>
+    <script src="./js/fetch.js"></script>
+    <script src="./js/vie.js"></script>
+    <script src="./js/script.js"></script>
+</body>
+</html>
