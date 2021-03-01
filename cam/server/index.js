@@ -32,8 +32,8 @@ app.get("/getConfig", (req, res) => {
 })
 
 io.on('connection', client => {
-    console.log("[Socket.io] New Client connected: " + client.handshake.headers["user-agent"]);
-});
+    console.log("[Socket.io] New Client connected: " + client.handshake.headers["user-agent"])
+})
 
 server.listen(port, () => {
     console.clear()
