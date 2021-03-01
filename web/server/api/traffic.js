@@ -37,8 +37,6 @@ router.post("/register", async (req, res) => {
 router.get("/current/:LID/:format", async (req, res) => {
     const query = req.params
 
-    console.log(req.params);
-
     const locationInfo = await db("locations")
         .where({LID: query.LID})
         .first()
@@ -74,8 +72,8 @@ function convertCompound(rawData) {
     const result = {
         roomCapacity: rawData.location.capacity,
         inRoom: 0,
-        max: Infinity,
-        min: -Infinity
+        max: -Infinity,
+        min: Infinity
     }
 
     rawData.traffic.forEach(set => {

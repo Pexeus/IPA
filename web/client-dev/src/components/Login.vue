@@ -6,6 +6,7 @@
       <input type="text" id="name" v-model="loginData.username">
       <label for="password">Passwort:</label>
       <input type="password" id="password" v-model="loginData.password">
+      <p>{{loginData.status}}</p>
       <button @click="login()">Login</button>
     </div>
   </div>
@@ -30,7 +31,15 @@ export default {
 
     async function login() {
       const response = await post("/api/auth/login", loginData)
-      console.log(response);
+      
+      loginData.status = response.message
+
+      if (response.status == true) {
+        const token = response.token
+
+        localStorage.setItem("jwt", token)
+        location.reload()
+      }
     }
 
     return {loginData, login}
