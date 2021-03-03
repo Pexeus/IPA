@@ -1,8 +1,10 @@
 <template>
     <div class="dashboardWrapper">
         <div class="dasboard">
-            <Chart :chartData="data.chartData"></Chart>
-            <Overview :overviewData="data.overviewData" ></Overview>
+            <Chart :chartData="data"></Chart>
+            <Overview :overviewData="data" ></Overview>
+            <Config :configData="data"></Config>
+            <Stream :streamData="data"></Stream>
         </div>
     </div>
 </template>
@@ -11,16 +13,22 @@
 import { reactive, watch } from 'vue'
 import {post, get} from "../fetch"
 import {decodeToken} from "../jwt"
-import Chart from "./Chart"
-import Overview from './Overview.vue'
-import {host} from "../config"
 import SocketIO from "socket.io-client"
+import {host} from "../config"
+
+import Chart from "./Chart"
+import Overview from './Overview'
+import Config from "./Config"
+import Stream from "./Stream"
+
 
 export default {
     name: "Dashboard",
     components: {
         Chart,
-        Overview
+        Overview,
+        Config,
+        Stream
     },
     props:{
         location: Object,
@@ -28,27 +36,18 @@ export default {
 
     setup(props, context) {
         const data = reactive({
-            chartData: {},
-            overviewData: {}
+            location: {}
         })
-
         const token = decodeToken(localStorage.jwt)
-
         const socket = SocketIO(host, {
             query: {
                 key: token.key
             }
         });
-
-        data.overviewData.socket = socket
-        data.chartData.socket = socket
+        data.socket = socket
 
         async function update() {
-            //const chartData = await get(`/api/traffic/current/${props.location.ID}/chart`)
-            //const overviewData = await get(`/api/traffic/current/${props.location.ID}/compound`)
-
-            data.chartData.location = props.location.ID
-            data.overviewData.location = props.location.ID
+            data.location = props.location.ID
         }
 
         watch(() => props.location.ID, async () => {
@@ -69,5 +68,6 @@ export default {
         height: 100%;
         margin-top: 50px;
         text-align: center;
+        margin-bottom: 50px;
     }
 </style>

@@ -41,6 +41,7 @@ export default {
         left: 0;
         padding-right: 50px;
         color: white;
+        z-index: 10;
     }
 
     .header div, h2 {

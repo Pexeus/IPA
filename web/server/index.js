@@ -7,6 +7,7 @@ const cors = require("cors")
 const traffic = require("./api/traffic")
 const auth = require("./api/auth")
 const video = require("./api/video")
+const locations = require("./api/locations")
 
 //initiating express, http
 const port = 80
@@ -27,7 +28,7 @@ const io = require('socket.io')(server, {
         origin: "*",
         methods: ["*"]
     }
-});
+})
 
 //setting up the socket.io authentication
 io.use((socket, next) => {
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 app.use("/api/traffic", traffic)
 app.use("/api/auth", auth)
 app.use("/api/video", video)
+app.use("/api/locations", locations)
 
 server.listen(port, () => {
     console.clear()

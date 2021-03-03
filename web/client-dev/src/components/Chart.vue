@@ -2,9 +2,9 @@
     <div class="chartWrapper">
          <canvas id="chart"></canvas>
          <div class="chartMenu">
-             <select name="setDataset" class="selector">
-                 <option @click="updateChart()" value="current">Aktuelle Daten</option>
-                 <option @click="updateChart()" value="all">Alle Daten</option>
+             <select @change="updateChart()" name="setDataset" class="selector" id="setDataset">
+                 <option value="current">Aktuelle Daten</option>
+                 <option value="all">Alle Daten</option>
              </select>
          </div>
     </div>
@@ -60,7 +60,10 @@ export default {
         }
 
         async function updateChart() {
-            data.traffic = await get(`/api/traffic/current/${props.chartData.location}/chart`)
+            const mode = document.getElementById("setDataset").value
+            console.log(mode);
+
+            data.traffic = await get(`/api/traffic/${mode}/${props.chartData.location}/chart`)
 
             if (chart == undefined) {
                 init()
@@ -99,5 +102,22 @@ export default {
         width: calc(100% - 20px);
         max-width: 1000px;
         border-radius: 5px;
+    }
+
+    .chartMenu {
+        text-align: right;
+        padding: 15px;
+    }
+
+    .chartMenu select {
+        border: 0;
+        padding: 5px;
+        box-shadow: 0px 0px 3px var(--shadow);
+        font-size: large;
+        cursor: pointer;
+    }
+
+    .chartMenu select:hover {
+        color: var(--tf);
     }
 </style>

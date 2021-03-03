@@ -27,11 +27,10 @@ router.post("/register", async (req, res) => {
                 console.log(err);
             })
         
-        console.log("dataupdate");
         req.io.sockets.emit("dataupdate")
     }
 
-    res.status(200).end("ok")
+    res.status(200).json({status: "ok"})
 })
 
 router.get("/current/:LID/:format", async (req, res) => {
@@ -46,6 +45,28 @@ router.get("/current/:LID/:format", async (req, res) => {
             LID: query.LID
         })
         .andWhere("time", ">", locationInfo.tcap)
+
+    const analytics = analyse(query)
+
+    const result = {
+        location: locationInfo,
+        traffic: traffic
+    }
+
+    res.status(200).json(formatData(query.format, result))
+})
+
+router.get("/all/:LID/:format", async (req, res) => {
+    const query = req.params
+
+    const locationInfo = await db("locations")
+        .where({LID: query.LID})
+        .first()
+
+    const traffic = await db("traffic")
+        .where({
+            LID: query.LID
+        })
 
     const result = {
         location: locationInfo,
@@ -66,6 +87,42 @@ function formatData(format, rawData) {
     if (format == "compound") {
         return convertCompound(rawData)
     }
+}
+
+function analyse(query) {
+    return new Promise(async resolve => {
+        const traffic = await db("traffic")
+        .where({
+            LID: query.LID,
+            event: "exit"
+        })
+
+        const eventTimes = []
+
+        traffic.forEach(event => {
+            eventTimes.push(event.time)
+        })
+
+        const avgWait = averageDelta(eventTimes.sort())
+        const lastExit = eventTimes.sort()[0]
+
+        const analytics = {
+            avgWaitMinute: avgWait.minutes,
+            avgWaitUnix: avgWait.unix,
+            lastExit: lastExit
+        }
+
+        console.log(analytics);
+    })
+}
+
+const averageDelta = ([x,...xs]) => {
+    //dieses snippet wurde von https://stackoverflow.com/questions/40236191/how-can-i-compute-the-difference-between-array-values-then-average-them eingefügt
+    const avg = xs.reduce(([acc, last], x) => [acc + (x - last), x],[0, x]) [0] / xs.length
+
+    const avgMin = Math.round(avg / 100 / 60) / 10
+
+    return {unix: Math.round(avg), minutes: avgMin}
 }
 
 function convertCompound(rawData) {

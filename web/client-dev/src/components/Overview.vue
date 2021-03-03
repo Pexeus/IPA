@@ -45,7 +45,6 @@ export default {
 
         async function updateOverview() {
             const dataset = await get(`/api/traffic/current/${props.overviewData.location}/compound`)
-            console.log(dataset);
 
             data.compound = dataset
         }

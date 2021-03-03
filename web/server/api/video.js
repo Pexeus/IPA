@@ -8,8 +8,8 @@ router.get("/", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    req.io.sockets.emit("frame", req.body)
-    console.log(frame);
+    const data = req.body
+    req.io.sockets.emit(`video_${data.cam}`, data.data)
     res.end("ok")
 })
 
