@@ -6,7 +6,7 @@ const stream = require("./stream")
 const logger = require("./logger")
 
 const app = express()
-const port = 888
+const port = 80
 const server = http.createServer(app)
 
 const socketio = require("socket.io")
