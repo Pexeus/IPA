@@ -1,3 +1,7 @@
+# Pfad: /ai/dispatcher.py
+# Autoren: Liam Benedetti
+# Beschreibung: sendet die von counter.py erhaltenen Events zu einem Zielserver
+
 # Imports
 import time
 import requests
@@ -24,6 +28,7 @@ def initializeDispatcher(ip, proc):
 
     print("[INFO] Dispatcher configuration: IP:", ip, "Protocol:", proc)
 
+# Frame wird als BGR entgegengenommen und als base64 encodetes JPG zum Webserver gesendet
 def dispatchFrame(camName, frame):
     global dispatchCooldown
 
@@ -55,6 +60,8 @@ def dispatchFrame(camName, frame):
     else:
         dispatchCooldown = dispatchCooldown - 1
 
+# es wird der eventtyp, sowie der name der Kamera entgegengenomme
+# es wird ein JSON objekt mit allen relevanten Daten zu Webserver gesendet
 def dispatchEvent(event, camName):
     global webserver
     global protocol
@@ -76,7 +83,7 @@ def dispatchEvent(event, camName):
     }
 
     # Versuche das Event an den Webserver zu senden (try).
-    # be fehlschlag, melde dies über die Kommandozeile
+    # bei fehlschlag, melde dies über die Kommandozeile
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data), timeout=0.25)
         print("[eventDispatcher] dispatched event:", event)

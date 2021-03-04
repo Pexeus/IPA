@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
 
 router.post("/register", async (req, res) => {
     const event = req.body
+    console.log(event);
 
     const locationInfo = await db("locations")
         .where({name: event.location})
@@ -46,11 +47,9 @@ router.get("/current/:LID/:format", async (req, res) => {
         })
         .andWhere("time", ">", locationInfo.tcap)
 
-    const analytics = analyse(query)
-
     const result = {
         location: locationInfo,
-        traffic: traffic
+        traffic: traffic,
     }
 
     res.status(200).json(formatData(query.format, result))
@@ -70,10 +69,18 @@ router.get("/all/:LID/:format", async (req, res) => {
 
     const result = {
         location: locationInfo,
-        traffic: traffic
+        traffic: traffic,
     }
 
     res.status(200).json(formatData(query.format, result))
+})
+
+router.get("/analytics/:LID", async (req, res) => {
+    const query = req.params
+
+    const analytics = await analyse(query)
+
+    res.json(analytics)
 })
 
 function formatData(format, rawData) {
@@ -91,28 +98,45 @@ function formatData(format, rawData) {
 
 function analyse(query) {
     return new Promise(async resolve => {
+        const locationInfo = await db("locations")
+            .where({LID: query.LID})
+            .first()
+
         const traffic = await db("traffic")
-        .where({
-            LID: query.LID,
-            event: "exit"
-        })
+            .where({
+                LID: query.LID,
+            })
+            .andWhere("time", ">", locationInfo.tcap)
 
         const eventTimes = []
+        let inside = 0
+        let lastNotFull = 0
 
         traffic.forEach(event => {
-            eventTimes.push(event.time)
+            if (event.event == "exit") {
+                eventTimes.push(event.time)
+                inside -= 1
+            }
+            else {
+                inside += 1
+            }
+
+            if (inside < locationInfo.capacity) {
+                lastNotFull = event.time
+            }
         })
 
         const avgWait = averageDelta(eventTimes.sort())
         const lastExit = eventTimes.sort()[0]
 
         const analytics = {
-            avgWaitMinute: avgWait.minutes,
-            avgWaitUnix: avgWait.unix,
-            lastExit: lastExit
+            avgLeaveMinute: avgWait.minutes,
+            avgLeaveUnix: avgWait.unix,
+            lastExit: lastExit,
+            waitingSince: lastNotFull
         }
 
-        console.log(analytics);
+        resolve(analytics)
     })
 }
 

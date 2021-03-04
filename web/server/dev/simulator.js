@@ -1,4 +1,5 @@
-const axios = require("axios")
+const axios = require("axios");
+const key = require("../key.json").key
 
 function sleep(time) {
     return new Promise(resolve => {
@@ -36,14 +37,18 @@ async function sampleData(numSets) {
 }
 
 async function simulateTraffic(max, freq, exitProbability) {
+    let event
+    const info = {
+        inside: 0
+    }
     for(i = 0; i <= max; i++) {
-        let event
-
         if (Math.random() > exitProbability) {
             event = "enter"
+            info.inside += 1
         }
         else {
             event = "exit"
+            info.inside -= 1
         }
 
         const set = {
@@ -52,8 +57,22 @@ async function simulateTraffic(max, freq, exitProbability) {
             time: Date.now()
         }
 
-        const response = await axios.post("/api/traffic/register", set)
-        console.log("simulated " +  event);
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                "Auth": key
+            }
+        }
+
+        const response = await axios.post("/api/traffic/register", set, config)
+        if (response.data.status == "ok") {
+            console.clear()
+            console.log(`Personen im Raum: ${info.inside}`);
+        }
+        else {
+            console.log("ERROR");
+            console.log(response);
+        }
 
         await sleep(freq * Math.random())
     }
@@ -61,4 +80,4 @@ async function simulateTraffic(max, freq, exitProbability) {
 
 //sampleData(10)
 
-simulateTraffic(10000, 1, 0.5)
+simulateTraffic(10000, 3, 0.5)

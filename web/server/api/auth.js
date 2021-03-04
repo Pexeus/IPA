@@ -2,7 +2,7 @@ const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("modjwt")
 
-const API_KEY = "ihaidhsadh98audadubsaidhi324921394u12343"
+const API_KEY = require("../config.json").key
 
 const db = require("../db/connection")
 
@@ -19,7 +19,6 @@ router.get("/hash/:plain", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     const credientals = req.body
-
     const users = await db("users").where({name: credientals.username})
 
     if(users.length > 0) {
