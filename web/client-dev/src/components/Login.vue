@@ -3,7 +3,7 @@
     <div class="login">
       <h2>Login</h2>
       <div class="inputBox">
-        <label for="name">Name:</label>
+        <label for="name">Nutzername:</label>
         <input type="text" id="name" v-model="loginData.username">
       </div>
       <br>
@@ -37,18 +37,31 @@ export default {
     })
 
     async function login() {
-      const response = await post("/api/auth/login", loginData)
+      const validation = await validate()
+      if (validation == true) {
+        const response = await post("/api/auth/login", loginData)
 
-      if (response.status == true) {
-        const token = response.token
+        if (response.status == true) {
+          const token = response.token
 
-        loginData.status = ""
+          loginData.status = ""
 
-        localStorage.setItem("jwt", token)
-        location.reload()
+          localStorage.setItem("jwt", token)
+          location.reload()
+        }
+        else {
+          loginData.status = response.message
+        }
+      }
+    }
+
+    async function validate() {
+      if (loginData.password != "" && loginData.username != "") {
+        return true
       }
       else {
-        loginData.status = response.message
+        alert("Bitte füllen Sie alle Felder aus!")
+        return false
       }
     }
 

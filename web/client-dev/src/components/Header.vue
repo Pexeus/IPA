@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <h2 class="title">IPA 2021</h2>
+        <h2 class="title">People Counter</h2>
         <div class="userPanel">
             <p>{{userInfo.name}} | {{userInfo.role}}</p>
             <button @click="logout()">Logout</button>

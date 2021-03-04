@@ -9,13 +9,16 @@ const auth = require("./api/auth")
 const video = require("./api/video")
 const locations = require("./api/locations")
 
+//importing middleware
+const guard = require("./middleware/auth")
+
 //initiating express, http
 const port = 80
 const app = express()
 const server = http.createServer(app)
 
 //constant vars
-const API_KEY = "ihaidhsadh98audadubsaidhi324921394u12343"
+const API_KEY = require("./key.json").key
 
 //setting middleware
 app.use(cors())
@@ -47,10 +50,10 @@ app.use((req, res, next) => {
 })
 
 //setting routes
-app.use("/api/traffic", traffic)
+app.use("/api/traffic", guard, traffic)
 app.use("/api/auth", auth)
-app.use("/api/video", video)
-app.use("/api/locations", locations)
+app.use("/api/video", guard, video)
+app.use("/api/locations", guard, locations)
 
 server.listen(port, () => {
     console.clear()
