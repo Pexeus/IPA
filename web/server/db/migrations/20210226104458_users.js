@@ -3,7 +3,7 @@ exports.up = function(knex) {
       table.increments("UID")
       table.string("name")
       table.string("password")
-      table.enum("role", ["user", "admin"])
+      table.enum("role", ["gate", "admin"])
   })
 };
 

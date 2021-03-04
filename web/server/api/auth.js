@@ -2,6 +2,8 @@ const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("modjwt")
 
+const API_KEY = "ihaidhsadh98audadubsaidhi324921394u12343"
+
 const db = require("../db/connection")
 
 const router = express.Router()
@@ -18,14 +20,13 @@ router.get("/hash/:plain", async (req, res) => {
 router.post("/login", async (req, res) => {
     const credientals = req.body
 
-    console.log(credientals);
-
     const users = await db("users").where({name: credientals.username})
 
     if(users.length > 0) {
         const pwCheck = await bcrypt.compare(credientals.password, users[0].password)
 
         if (pwCheck == true) {
+
             const token = await createToken(users[0], 7)
             res.status(200).json({status: true, message: "Login erfolgreich", token: token})
         }
@@ -41,7 +42,7 @@ router.post("/login", async (req, res) => {
 async function createToken(user, lifetimeDays) {
     return new Promise(resolve => {
         const lifetime = 86400 * lifetimeDays
-        const token = jwt.createToken({id: user.UID, name: user.name, perm: user.role}, lifetime)
+        const token = jwt.createToken({id: user.UID, name: user.name, role: user.role, key: API_KEY}, lifetime)
 
         resolve(token)
     })
