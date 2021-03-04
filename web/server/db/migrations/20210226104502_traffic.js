@@ -4,7 +4,7 @@ exports.up = function(knex) {
         table.integer("LID")
         // hier können in der Zukunft weitere events registriert werden
         table.enum("event", ["enter", "exit"])
-        table.integer("time")
+        table.bigInteger("time")
     })
 };
 

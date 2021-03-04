@@ -2,7 +2,7 @@ const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("modjwt")
 
-const API_KEY = require("../key.json").key
+const API_KEY = require("../config.json").key
 
 const db = require("../db/connection")
 

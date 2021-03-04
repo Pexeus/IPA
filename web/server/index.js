@@ -1,3 +1,6 @@
+//console clear
+console.clear()
+
 //imports from NPM
 const express = require("express")
 const http = require("http")
@@ -18,12 +21,17 @@ const app = express()
 const server = http.createServer(app)
 
 //constant vars
-const API_KEY = require("./key.json").key
+const config = require("./config.json")
 
 //setting middleware
-app.use(cors())
+
+//if we are running in dev mode, use CORS
+if (config.environment == "dev") {
+    app.use(cors())
+}
+
 app.use(express.json())
-app.use(express.static("../client"))
+app.use(express.static("../client-dev/dist"))
 
 //initiating socketio
 const io = require('socket.io')(server, {
@@ -35,7 +43,7 @@ const io = require('socket.io')(server, {
 
 //setting up the socket.io authentication
 io.use((socket, next) => {
-    if (socket.handshake.query.key == API_KEY) {
+    if (socket.handshake.query.key == config.key) {
         next()
     }
 })
@@ -56,6 +64,5 @@ app.use("/api/video", guard, video)
 app.use("/api/locations", guard, locations)
 
 server.listen(port, () => {
-    console.clear()
     console.log(`Server listening on port ${port}`);
 })

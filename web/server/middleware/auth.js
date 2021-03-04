@@ -1,4 +1,4 @@
-const API_KEY = require("../key.json").key
+const API_KEY = require("../config.json").key
 
 module.exports = (req, res, next) => {
     const key = req.headers.auth

@@ -4,7 +4,7 @@ exports.up = function(knex) {
         table.increments("LID")
         table.string("name")
         table.integer("capacity")
-        table.integer("tcap")
+        table.bigInteger("tcap")
     })
 };
 
