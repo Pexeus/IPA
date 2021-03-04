@@ -1,5 +1,5 @@
 const axios = require("axios");
-const key = require("../key.json").key
+const key = require("../config.json").key
 
 function sleep(time) {
     return new Promise(resolve => {

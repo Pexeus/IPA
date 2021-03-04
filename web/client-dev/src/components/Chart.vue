@@ -11,11 +11,9 @@
 </template>
 
 <script>
-import { onUpdated, reactive, watch } from 'vue'
+import { watch } from 'vue'
 import {Chart} from "chart.js"
-import SocketIO from "socket.io-client"
-import {post, get} from "../fetch"
-import {host} from "../config"
+import {get} from "../fetch"
 import {decodeToken} from "../jwt"
 
 export default {

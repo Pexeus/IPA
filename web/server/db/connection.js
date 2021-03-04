@@ -1,11 +1,5 @@
-const knex = require("knex")({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'ipa'
-  }
-})
+const connection = require("./knexfile")
+
+const knex = require("knex")(connection)
 
 module.exports = knex
