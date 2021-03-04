@@ -19,8 +19,11 @@ import time
 import dlib
 import cv2
 
-#ZMQ Server import
-from zmqServer import initiateZMQ, recvZMQ
+# IPA 2021 - ZMQ Server import
+from zmqServer import initiateZMQ, recvZMQ, closeZMQ
+
+# IPA 2021 - Dispatcher import
+from dispatcher import initializeDispatcher, dispatchFrame, dispatchEvent
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -28,16 +31,20 @@ ap.add_argument("-p", "--prototxt", type=str, default="resources/MobileNetSSD_de
                 help="path to Caffe 'deploy' prototxt file")
 ap.add_argument("-m", "--model", type=str, default="resources/MobileNetSSD_deploy.caffemodel",
                 help="path to Caffe pre-trained model")
+# IPA 2021 - hier wurde die "remote option hinzugefügt"
 ap.add_argument("-i", "--input", type=str,
                 help="path to input file => or [remote] to listen on ZMQ")
 ap.add_argument("-o", "--output", type=str,
                 help="path to optional output video file")
-ap.add_argument("-c", "--confidence", type=float, default=0.4,
+ap.add_argument("-c", "--confidence", type=float, default=0.6,
                 help="minimum probability to filter weak detections")
-ap.add_argument("-s", "--skip-frames", type=int, default=30,
+ap.add_argument("-s", "--skip-frames", type=int, default=10,
                 help="# of skip frames between detections")
+# IPA 2021 - IP des webservers als argument erhalten
 ap.add_argument("-ws", "--webserver", required=True,
                 help="IP of webserver")
+ap.add_argument("-pc", "--protocol", required=True,
+                help="Set Protocol [HTTP/HTTPS]")
 args = vars(ap.parse_args())
 
 # initialize the list of class labels MobileNet SSD was trained to
@@ -51,6 +58,9 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
 print("[INFO] loading model...")
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
+# IPA 2021 dispatcher mit entsprechender IP des Webservers initialisieren
+initializeDispatcher(args["webserver"], args["protocol"])
+
 # if a video path was not supplied, grab a reference to the webcam
 if not args.get("input", False):
     print("[INFO] starting video stream...")
@@ -59,12 +69,12 @@ if not args.get("input", False):
 
 # otherwise, grab a reference to the video file
 else:
-    # [LIAM] bei remote source, server initialisieren
+    # IPA2021 bei remote source, server initialisieren
     if args["input"] == "remote":
-        print("[INFO] connecting to remote video source...")
+        print("[INFO] Listening on ZMQ Socket...")
 
         ZMQ = initiateZMQ()
-
+    # IPA2021 sonst Datei öffnen
     else:
         print("[INFO] opening video file...")
         vs = cv2.VideoCapture(args["input"])
@@ -97,6 +107,8 @@ fps = FPS().start()
 while True:
     # grab the next frame and handle if we are reading from either
     # VideoCapture or VideoStream
+
+    # IPA2021 - ist der input remote, erhalte den Frame von imageZMQ
     if args["input"] == "remote":
         (camName, frame) = recvZMQ(ZMQ)
     else:
@@ -113,6 +125,9 @@ while True:
     # the frame from BGR to RGB for dlib
     frame = imutils.resize(frame, width=500)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # IPA 2021 - Aktueller Frame wird an den Webserver gesendet
+    dispatchFrame(camName, frame)
 
     # if the frame dimensions are empty, set them
     if W is None or H is None:
@@ -207,7 +222,7 @@ while True:
     # draw a horizontal line in the center of the frame -- once an
     # object crosses this line we will determine whether they were
     # moving 'up' or 'down'
-    cv2.line(frame, (0, H // 2), (W, H // 2), (0, 255, 255), 2)
+    cv2.line(frame, (0, H // 2), (W, H // 2), (0, 0, 255), 2)
 
     # use the centroid tracker to associate the (1) old object
     # centroids with (2) the newly computed object centroids
@@ -244,12 +259,16 @@ while True:
                     totalUp += 1
                     to.counted = True
 
+                    dispatchEvent("exit", camName)
+
                 # if the direction is positive (indicating the object
                 # is moving down) AND the centroid is below the
                 # center line, count the object
                 elif direction > 0 and centroid[1] > H // 2:
                     totalDown += 1
                     to.counted = True
+
+                    dispatchEvent("enter", camName)
 
         # store the trackable object in our dictionary
         trackableObjects[objectID] = to
@@ -259,13 +278,13 @@ while True:
         text = "ID: {}".format(objectID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+        cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), 10)
 
     # construct a tuple of information we will be displaying on the
     # frame
     info = [
-        ("Up", totalUp),
-        ("Down", totalDown),
+        ("Exit", totalUp),
+        ("Enter", totalDown),
         ("Status", status),
     ]
 
@@ -311,6 +330,7 @@ else:
     if args["input"] != "remote":
         vs.release()
     else:
+        # IPA 2021 - ZMQ server schliessen
         closeZMQ(ZMQ)
 
 
