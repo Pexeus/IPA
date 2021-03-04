@@ -1,3 +1,8 @@
+# Pfad: /ai/counter.py
+# Autoren: Diverse, weiterentwickelt von Liam Benedetti
+# Beschreibung: Greift auf die AI zu und verarbeitet die entnommenen informationen zu enter/exit events
+
+
 # USAGE
 # To read and write back out to video:
 # python people_counter.py --prototxt mobilenet_ssd/MobileNetSSD_deploy.prototxt --model mobilenet_ssd/MobileNetSSD_deploy.caffemodel --input videos/example_01.mp4

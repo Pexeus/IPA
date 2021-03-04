@@ -7,12 +7,12 @@ exports.seed = function(knex) {
       return knex('users').insert([
         {
           name: "Admin",
-          password: "$2b$10$gSTvTr94r1Rr7iejvQa5ve6qFLMzp6D6AfwMrCDhZZx8cvBqOGfzi",
+          password: "$2b$10$Il/Hs5R8b4lbThZEQBp6QebzMohlRsPbdFokLDxX.wEQOyUJUTGCC",
           role: "admin"
         },
         {
           name: "Gate",
-          password: "$2b$10$gSTvTr94r1Rr7iejvQa5ve6qFLMzp6D6AfwMrCDhZZx8cvBqOGfzi",
+          password: "$2b$10$Il/Hs5R8b4lbThZEQBp6QebzMohlRsPbdFokLDxX.wEQOyUJUTGCC",
           role: "gate"
         }
       ]);
