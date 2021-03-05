@@ -1,24 +1,24 @@
-# Pfad: /ai/dispatcher.py
-# Autoren: Liam Benedetti
-# Beschreibung: Initiiert imageZMQ auf dem Port 5555 und gibt die empfangenen Videodaten an counter.py weiter
+# Path: /ai/zmqServer.py
+# Autors: Liam Benedetti
+# Description: Initiates imageZMQ on port 5555 and passes frames from the Network to counter.py
 
-# imports zum empfangen des streams
 import imagezmq
 
-#ZMQ Socket Server starten
+# initiate the ZMQ Socket server and make it accessible for couter.py
 def initiateZMQ():
     imageHub = imagezmq.ImageHub()
     return imageHub
 
-# Empfange einen Frame über ZMQ und gebe diesen als BGR Buffer zurück
-# auch der "Ursprung" des Frames (wird vom raspberry mitgesendet) wird empfangen und zurückgegeben
+# takes the ZMQ hub and waits for a full frame
+# if a full frame is recieved, return it
 def recvZMQ(ZMQ):
     (camName, frame) = ZMQ.recv_image()
     ZMQ.send_reply(b'OK')
 
     return (camName, frame)
 
-# Das Socket, auf dem ZMQ auf Daten wartet, wird geschlossen. So werden keine Ports blockiert.
+# deactivates the ZMQ Socket
+# this prevents the program from blocking the port after exit
 def closeZMQ(ZMQ):
     print("[INFO] closing imageZMQ")
     ZMQ.close()

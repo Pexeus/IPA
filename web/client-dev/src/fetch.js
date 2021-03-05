@@ -1,6 +1,11 @@
+//Path: web/client-dev/src/config.js
+//Autor: Liam Benedetti
+//Description: Manages Requets to the API
+
 import {host} from "./config"
 import {decodeToken} from "./jwt"
 
+//sets the headers and options for POST requests
 export async function post(route, body) {
     const key = getKey()
 
@@ -18,7 +23,7 @@ export async function post(route, body) {
 
     return jsonData
 }
-
+//sets the headers and options for GET requests
 export async function get(route) {
     const key = getKey()
 
@@ -36,6 +41,7 @@ export async function get(route) {
     return jsonData
 }
 
+//Gets the API key from localStorage
 function getKey() {
     if (localStorage.jwt != undefined) {
         const jwt = localStorage.jwt

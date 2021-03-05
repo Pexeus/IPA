@@ -1,6 +1,6 @@
-# Pfad: /ai/dispatcher.py
-# Autoren: Liam Benedetti
-# Beschreibung: sendet die von counter.py erhaltenen Events zu einem Zielserver
+# Path: /ai/dispatcher.py
+# Autors: Liam Benedetti
+# Description: Dispatches the Events from counter.py over the Network
 
 # Imports
 import time
@@ -10,15 +10,14 @@ import base64
 import cv2
 from datetime import datetime
 
-# Globale Variablen
+# Global Variables
 webserver = ""
 protocol = ""
 dispatchCooldown = 0
-#  Dies ist eine vorübergehnde Lösung!
+# (not a permanent solution) Webserver API Key
 API_KEY = "yN6Bzj}bCDs_Tw2&9z!/6#}@5W$A;9]ny;,>a'Z5"
 
-# Initialisierung des Dispatchers, ip wird für alle requestst festgelegt
-# hier wird auch das Protokoll HTTP/HTTPS für alle requests festgelegt
+# Initializing th dispatcher with the IP of the Webserver, as well as the protocol (http/https)
 def initializeDispatcher(ip, proc):
     global webserver
     global protocol
@@ -28,30 +27,33 @@ def initializeDispatcher(ip, proc):
 
     print("[INFO] Dispatcher configuration: IP:", ip, "Protocol:", proc)
 
-# Frame wird als BGR entgegengenommen und als base64 encodetes JPG zum Webserver gesendet
+# takes the Frame in BGR, compresses it as a jpg and encodes it to base64
+# the base64 string then gets sent to the Webserver
 def dispatchFrame(camName, frame):
     global dispatchCooldown
 
-    # Ist der dispatchCooldown 0, versuche zu senden, sonst warte und zähle cooldown -1
+    # if disptachCooldown is 0, try to send, otherwise wait for the cooldown
+    # this prevents the program from waiting for the 250ms timeot everytime a new frame is loaded.
     if dispatchCooldown == 0:
         global webserver
         global protocol
         global API_KEY
         
-        # Frame als jpg encoden
+        # compress/encode using jpg
         retval, buffer = cv2.imencode('.jpg', frame)
-        # Als jpeg encodedten buffer in base64 encoden
+        # ecoding jpg buffer to base64
         base64Data = base64.b64encode(buffer)
 
-        # ZielURL und headers festlegen
+        # setting target URL an headers
         url = protocol + "://" + webserver + ":80/api/video/"
         headers = {
             'content-type': 'application/json',
+            # auth header
             "Auth": API_KEY
         }
         
-        # Versuche den Frame an den Webserver zu senden (try).
-        # Ist der Webserver nicht erreichtbar (except), warte 240 Frames lang (ca 8 sekunden) und versuche es erneut
+        # try to send the Frame to the Webserver.
+        # if the timeout expires, trigger a cooldown.
         try:
             response = requests.post(url, headers=headers, json={"cam": camName, "data": base64Data}, timeout=0.25)
         except:
@@ -60,21 +62,20 @@ def dispatchFrame(camName, frame):
     else:
         dispatchCooldown = dispatchCooldown - 1
 
-# es wird der eventtyp, sowie der name der Kamera entgegengenomme
-# es wird ein JSON objekt mit allen relevanten Daten zu Webserver gesendet
+# take the event (enter/exit) as well as the origin and send it to the Webserver
 def dispatchEvent(event, camName):
     global webserver
     global protocol
     global API_KEY
 
-    # Objekt, dass versendet werden soll definieren
+    # create the JSON dataset
     data = {
         "event": event,
         "time": int(datetime.now().timestamp() * 1000),
         "location": camName,
     }
 
-    # ZielURL und headers festlegen
+    # set target URL and Headers
     url = protocol + "://" + webserver + ":80/api/traffic/register"
     print(url)
     headers = {
@@ -82,8 +83,8 @@ def dispatchEvent(event, camName):
         "Auth": API_KEY
     }
 
-    # Versuche das Event an den Webserver zu senden (try).
-    # bei fehlschlag, melde dies über die Kommandozeile
+    # try to send the event to the webserver
+    # if the timeout expires, inform the admin over the command prompt
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data), timeout=0.25)
         print("[eventDispatcher] dispatched event:", event)

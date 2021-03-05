@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Overview.vue
+    Autor: Liam Benedetti
+    Description: Dispays traffic data in a overview
+-->
+
 <template>
     <div class="overview">
         <div class="box-ok" v-if="data.compound.inRoom <= data.compound.roomCapacity">
@@ -36,19 +42,23 @@ export default {
     },
 
     setup(props, context) {
-        const token = decodeToken(localStorage.jwt)
         const data = reactive({compound: ""})
 
+        //listen on the "dataupdate" socket
+        //on signal, update the component
         props.overviewData.socket.on("dataupdate", () => {
             updateOverview()
         })
 
+        //refetch all data and update the component
         async function updateOverview() {
             const dataset = await get(`/api/traffic/current/${props.overviewData.location}/compound`)
 
             data.compound = dataset
         }
         
+        //watch the "props.overviewData.location" prop
+        //on change, load the location with the given ID
         watch(() => props.overviewData.location, async () => {
             updateOverview()
         })

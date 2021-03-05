@@ -1,6 +1,6 @@
-# Pfad: /ai/counter.py
-# Autoren: Diverse, weiterentwickelt von Liam Benedetti
-# Beschreibung: Greift auf die AI zu und verarbeitet die entnommenen informationen zu enter/exit events
+# Path: /ai/counter.py
+# Autors: Liam Benedetti
+# Description: Acesses the Deep Learning Network and dedects if a person is entering/exiting a room
 
 
 # USAGE

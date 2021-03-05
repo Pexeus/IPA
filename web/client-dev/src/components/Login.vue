@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Login.vue
+    Autor: Liam Benedetti
+    Description: Is displayed when no user is logged in
+-->
+
 <template>
   <div class="loginWrapper">
     <div class="login">
@@ -36,6 +42,7 @@ export default {
       status: ""
     })
 
+    //request a Login from the server
     async function login() {
       const validation = await validate()
       if (validation == true) {
@@ -55,6 +62,7 @@ export default {
       }
     }
 
+    //validate user inputs
     async function validate() {
       if (loginData.password != "" && loginData.username != "") {
         return true

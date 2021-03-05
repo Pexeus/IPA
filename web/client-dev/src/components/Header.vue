@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Header.vue
+    Autor: Liam Benedetti
+    Description: Displays the Logged in User to the User
+-->
+
 <template>
     <div class="header">
         <h2 class="title">People Counter</h2>
@@ -18,6 +24,8 @@ export default {
     },
     setup() {
         const userInfo = reactive(decodeToken(localStorage.jwt))
+
+        //clear the LocalStorage and reload the page, resulting in a logout
         function logout() {
             localStorage.removeItem("jwt")
             location.reload()

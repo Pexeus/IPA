@@ -1,12 +1,18 @@
+//Path: web/server/api/locations.js
+//Autor: Liam Benedetti
+//Description: All express routes related to traffic data
+
 const express = require("express")
 const db = require("../db/connection")
 
 const router = express.Router()
 
+//status
 router.get("/", (req, res) => {
     res.end("traffic service online")
 })
 
+//register a new traffic event
 router.post("/register", async (req, res) => {
     const event = req.body
     console.log(event);
@@ -34,6 +40,7 @@ router.post("/register", async (req, res) => {
     res.status(200).json({status: "ok"})
 })
 
+//get current traffic data in a specific format
 router.get("/current/:LID/:format", async (req, res) => {
     const query = req.params
 
@@ -55,6 +62,7 @@ router.get("/current/:LID/:format", async (req, res) => {
     res.status(200).json(formatData(query.format, result))
 })
 
+//get all traffic data in a specific format
 router.get("/all/:LID/:format", async (req, res) => {
     const query = req.params
 
@@ -75,6 +83,7 @@ router.get("/all/:LID/:format", async (req, res) => {
     res.status(200).json(formatData(query.format, result))
 })
 
+//get analytics of a specific location
 router.get("/analytics/:LID", async (req, res) => {
     const query = req.params
 
@@ -83,6 +92,7 @@ router.get("/analytics/:LID", async (req, res) => {
     res.json(analytics)
 })
 
+//format raw traffic data
 function formatData(format, rawData) {
     if(format == "raw" || format == undefined) {
         return rawData
@@ -96,6 +106,7 @@ function formatData(format, rawData) {
     }
 }
 
+//analyse traffic data, return statistics
 function analyse(query) {
     return new Promise(async resolve => {
         const locationInfo = await db("locations")
@@ -140,6 +151,7 @@ function analyse(query) {
     })
 }
 
+//calculate the average delta of a given array of numbers
 const averageDelta = ([x,...xs]) => {
     //dieses snippet wurde von https://stackoverflow.com/questions/40236191/how-can-i-compute-the-difference-between-array-values-then-average-them eingefügt
     const avg = xs.reduce(([acc, last], x) => [acc + (x - last), x],[0, x]) [0] / xs.length
@@ -149,6 +161,7 @@ const averageDelta = ([x,...xs]) => {
     return {unix: Math.round(avg), minutes: avgMin}
 }
 
+//convert raw data to a compund
 function convertCompound(rawData) {
     const result = {
         roomCapacity: rawData.location.capacity,
@@ -176,6 +189,7 @@ function convertCompound(rawData) {
     return result
 }
 
+//convert raw data to chart format
 function convertChart(rawData) {
     const result = {
         roomCapacity: rawData.location.capacity,
@@ -199,6 +213,7 @@ function convertChart(rawData) {
     return result
 }
 
+//farmat UNIX Timestamp to Date
 function format_time(s) {
     return new Date(s * 1e3).toISOString().slice(-13, -5);
 }

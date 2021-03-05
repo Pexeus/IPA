@@ -1,3 +1,8 @@
+//Path: web/server/db/knexfile.js
+//Autor: Liam Benedetti
+//Description: Knex login data
+
+
 const config = require("../config.json")
 var connection = {}
 

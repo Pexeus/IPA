@@ -1,3 +1,7 @@
+//Path: web/server/db/migrations/20210226104502_traffic.js
+//Autor: Liam Benedetti
+//Description: Knex migration
+
 exports.up = function(knex) {
     return knex.schema.createTable("traffic", table => {
         table.increments("TID")

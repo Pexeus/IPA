@@ -1,6 +1,12 @@
+//Path: web/server/dev/simulator.js
+//Autor: Liam Benedetti
+//Description: simulating traffic requests
+
+
 const axios = require("axios");
 const key = require("../config.json").key
 
+//pause the program for a given time
 function sleep(time) {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -9,6 +15,7 @@ function sleep(time) {
     })
 }
 
+//insert sample data into the database
 async function sampleData(numSets) {
     for(i = 0; i <= numSets; i++) {
         let event
@@ -36,6 +43,7 @@ async function sampleData(numSets) {
     }
 }
 
+//simulate people entering/leaving the room
 async function simulateTraffic(max, freq, exitProbability) {
     let event
     const info = {

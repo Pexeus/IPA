@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Dashboard.vue
+    Autor: Liam Benedetti
+    Description: Main Component, controls Chart, Overview, Config and Stream
+-->
+
 <template>
     <div class="dashboardWrapper">
         <div class="dasboard">
@@ -37,6 +43,7 @@ export default {
         const data = reactive({
             location: {}
         })
+        //connect to the websocket, using the Auth key
         const token = decodeToken(localStorage.jwt)
         const socket = SocketIO(host, {
             query: {
@@ -45,10 +52,13 @@ export default {
         });
         data.socket = socket
 
+        //update the currently displayed location
         async function update() {
             data.location = props.location.ID
         }
 
+        //watch the "props.location.ID" prop
+        //on change, load the location with the given ID
         watch(() => props.location.ID, async () => {
             console.log("loading new location: " + props.location.ID);
             setTimeout(() => {

@@ -1,3 +1,7 @@
+//Path: web/server/db/seeds/users.js
+//Autor: Liam Benedetti
+//Description: Knex seed
+
 //Urladung für tabelle "users"
 exports.seed = function(knex) {
   //Alle bisherigen Einträge löschen

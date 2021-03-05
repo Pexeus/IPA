@@ -1,3 +1,7 @@
+//Path: web/server/db/migrations/20210226104507_locations.js
+//Autor: Liam Benedetti
+//Description: Knex migration
+
 
 exports.up = function(knex) {
     return knex.schema.createTable("locations", table => {

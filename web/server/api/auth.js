@@ -1,3 +1,7 @@
+//Path: web/server/api/auth.js
+//Autor: Liam Benedetti
+//Description: Manages the Auth process of the API
+
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("modjwt")
@@ -12,11 +16,14 @@ const bcryptConf = {
     salt: 10
 }
 
+//return the hash of a gven password
 router.get("/hash/:plain", async (req, res) => {
     let result = await bcrypt.hash(req.params.plain, bcryptConf.salt)
     res.status(200).end(result)
 })
 
+//take ligin credientals and check if they are valid
+//if valid, return a JWT, if not, return a status
 router.post("/login", async (req, res) => {
     const credientals = req.body
     const users = await db("users").where({name: credientals.username})
@@ -38,6 +45,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
+//create a new webToken
 async function createToken(user, lifetimeDays) {
     return new Promise(resolve => {
         const lifetime = 86400 * lifetimeDays

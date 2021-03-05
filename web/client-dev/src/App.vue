@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/App.vue
+    Autor: Liam Benedetti
+    Description: Main Component, controls Chart, Overview, Config and Stream
+-->
+
 <template>
   <Login v-if="user.status == false"></Login>
   <Header v-if="user.status == `admin`"></Header>
@@ -27,6 +33,7 @@ export default {
     const user = reactive({status: false})
     const location = reactive({ID: null})
 
+    //try to authenticate the user over Localstorage
     function auth() {
       const tokenRaw = localStorage.jwt
       if (tokenRaw == undefined) {

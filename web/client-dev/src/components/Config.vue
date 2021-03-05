@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Config.vue
+    Autor: Liam Benedetti
+    Description: Chart component
+-->
+
 <template>
     <div class="configCenterer">
         <div class="configWrapper">
@@ -43,6 +49,7 @@ export default {
     setup(props, context) {
         const data = reactive({config: {}})
 
+        //save the currently set configuration
         async function saveConfig() {
             const newConfig = data.config
 
@@ -59,6 +66,7 @@ export default {
             }
         }
 
+        //create a new event object and dispatch it to the server
         async function corCounter(eventType) {
             const event = {
                 time: Date.now(),
@@ -69,6 +77,7 @@ export default {
             await post("/api/traffic/register", event)
         }
 
+        //update the config Component
         async function updateConfig() {
             const dataset = await get(`/api/locations/info/${props.configData.location}`)
             data.config = dataset
@@ -76,6 +85,7 @@ export default {
             data.config.dateFormatted = convertDate(data.config.tcap)
         }
 
+        //reset the date input to the current time
         function resetTime() {
             const currentTime = Date.now()
 
@@ -83,6 +93,7 @@ export default {
             data.config.dateFormatted = convertDate(currentTime)
         }
 
+        //convert UNIX timestamp to human readable Date Format
         function convertDate(unix) {
             let date = new Date(unix);
 
@@ -97,7 +108,8 @@ export default {
             return dateFormatted
         }
 
-
+        //watch the "props.configData.location" prop
+        //on change, update the component
         watch(() => props.configData.location, async () => {
             updateConfig()
         })

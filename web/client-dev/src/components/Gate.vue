@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Gate.vue
+    Autor: Liam Benedetti
+    Description: Gate Component, dispays instructions to users
+-->
+
 <template>
     <div class="gate" v-if="data.traffic != undefined">
         <div class="g-enter" v-if="data.traffic.inRoom < data.traffic.roomCapacity">
@@ -42,17 +48,20 @@ export default {
     setup(props, components) {
         const data = reactive({})
         const token = decodeToken(localStorage.jwt)
+        //connect to the websocket, using the Auth Key saved in LocalStorage
         const socket = SocketIO(host, {
             query: {
                 key: token.key
             }
         });
 
+        //clear the LocalStorage and reload the page, resulting in a logout
         function logout() {
             localStorage.removeItem("jwt")
             location.reload()
         }
 
+        //update the Gate Component
         async function updateGate() {
             const traffic = await get(`/api/traffic/current/${props.location.ID}/compound`)
             const analytics = await get(`/api/traffic/analytics/${props.location.ID}`)
@@ -80,10 +89,13 @@ export default {
             }, 1000);
         }
 
+        //listen on the "dataupdate" websocket channel
+        //on signal, update the component
         socket.on("dataupdate", () => {
             updateGate()
         })
 
+        //watch "props.location.ID", on change, update the component
         watch(() => props.location.ID, async () => {
             console.log("loading location: " + props.location.ID);
             updateGate()

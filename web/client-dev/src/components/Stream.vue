@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Stream.vue
+    Autor: Liam Benedetti
+    Description: Display the live video feed coming from the AI Server
+-->
+
 <template>
     <div class="previewWrapper">
         <div class="preview">
@@ -33,17 +39,21 @@ export default {
             resY: 0
         })
 
+        //Update the Preview Component
         async function updatePreview() {
             const dataset = await get(`/api/locations/info/${props.streamData.location}`)
 
             const channel = `video_${dataset.name}`
             initStreamStats()
             
+            //listen on the given channel for video data
+            //on new data, update the HTML
             props.streamData.socket.on(channel, data => {
                 renderFrame(data)
             })
         }
 
+        //render a Frame into the HTML
         function renderFrame(frame) {
             stats.frames += 1
 
@@ -55,10 +65,12 @@ export default {
             }
         }
 
+        //initialize stream statistics
         function initStreamStats() {
             if (display == null) {
                 display = document.getElementById("display")
             }
+            //every 250ms, update the stream statistics
             setInterval(() => {
                 stats.seconds += 0.25
 
@@ -72,7 +84,8 @@ export default {
                 }
             }, 250);
         }
-
+        //watch the "props.streamData.location" prop
+        //on change, load the location with the given ID
         watch(() => props.streamData.location, async () => {
             updatePreview()
         })

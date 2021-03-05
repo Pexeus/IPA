@@ -1,3 +1,9 @@
+<!--   
+    Path: web/client-dev/src/components/Chart.vue
+    Autor: Liam Benedetti
+    Description: Chart component
+-->
+
 <template>
     <div class="chartWrapper">
          <canvas id="chart"></canvas>
@@ -30,10 +36,12 @@ export default {
         var chart = undefined
         const token = decodeToken(localStorage.jwt)
 
+        //on signal on channel "dataupdate", refetch data
         props.chartData.socket.on('dataupdate', () => {
             updateChart()
         })
 
+        //initiate the chart
         function init() {
             const ctx = document.getElementById("chart")
             const chartData = data.traffic
@@ -59,6 +67,7 @@ export default {
             chart.update()
         }
 
+        //update the chart component
         async function updateChart() {
             const mode = document.getElementById("setDataset").value
 
@@ -72,6 +81,7 @@ export default {
             }
         }
 
+        //update the Chart
         function update() {
             const chartData = data.traffic
 
@@ -81,8 +91,7 @@ export default {
             chart.update()
         }
 
-
-
+        //on change of the "chartData.location" prop, update the chart
         watch(() => props.chartData.location, async () => {
             updateChart()
         })

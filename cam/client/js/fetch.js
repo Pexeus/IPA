@@ -5,8 +5,8 @@
 // der Host wird definier, leer lassen falls der selbe Host auf die Statischen Files hostet.
 const host = ""
 
-// stellt POST anfragen und gibt über einen Promise die responses zurück.
-// header, sowie formatierungen werden automatisch übernommen
+// takes a route, as well as a request body as JS Object
+// formats the body and sets all required headers
 async function post(route, body) {
     return new Promise (async resolve => {
         let fetchOptions = {
@@ -23,8 +23,8 @@ async function post(route, body) {
     })
 }
 
-// stellt PUT anfragen und gibt über einen Promise die responses zurück.
-// header, sowie formatierungen werden automatisch übernommen
+// takes a route, as well as a request body as JS Object
+// formats the body and sets all required headers
 async function put(route, body) {
     return new Promise (async resolve => {
         let fetchOptions = {
@@ -43,7 +43,7 @@ async function put(route, body) {
     })
 }
 
-// stellt GET anfragen und gibt über einen Promise die responses zurück.
+//takes a GET route and returns the response using a Promise
 async function get(route) {
     return new Promise(async resolve => {
         const response = await fetch(host + route)

@@ -1,3 +1,8 @@
+//Path: web/server/index.js
+//Autor: Liam Benedetti
+//Description: main server file. initiate the server and import all modules
+
+
 //console clear
 console.clear()
 
