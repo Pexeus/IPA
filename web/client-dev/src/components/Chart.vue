@@ -30,7 +30,9 @@ export default {
         var chart = undefined
         const token = decodeToken(localStorage.jwt)
 
-        props.chartData.socket.on('dataupdate', () => updateChart())
+        props.chartData.socket.on('dataupdate', () => {
+            updateChart()
+        })
 
         function init() {
             const ctx = document.getElementById("chart")
@@ -59,7 +61,6 @@ export default {
 
         async function updateChart() {
             const mode = document.getElementById("setDataset").value
-            console.log(mode);
 
             data.traffic = await get(`/api/traffic/${mode}/${props.chartData.location}/chart`)
 

@@ -16,7 +16,7 @@ const locations = require("./api/locations")
 const guard = require("./middleware/auth")
 
 //initiating express, http
-const port = 80
+const port = 86
 const app = express()
 const server = http.createServer(app)
 

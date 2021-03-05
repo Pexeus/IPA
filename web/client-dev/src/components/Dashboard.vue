@@ -11,7 +11,6 @@
 
 <script>
 import { reactive, watch } from 'vue'
-import {post, get} from "../fetch"
 import {decodeToken} from "../jwt"
 import SocketIO from "socket.io-client"
 import {host} from "../config"

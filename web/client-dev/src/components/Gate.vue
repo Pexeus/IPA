@@ -27,7 +27,7 @@
 import { reactive, watch } from 'vue'
 import SocketIO from "socket.io-client"
 import {host} from "../config"
-import {post, get} from "../fetch"
+import {get} from "../fetch"
 import {decodeToken} from "../jwt"
 
 export default {

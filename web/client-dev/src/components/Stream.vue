@@ -35,7 +35,6 @@ export default {
 
         async function updatePreview() {
             const dataset = await get(`/api/locations/info/${props.streamData.location}`)
-            console.log(dataset);
 
             const channel = `video_${dataset.name}`
             initStreamStats()
